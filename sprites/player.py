@@ -8,6 +8,7 @@ class Player(Image):
         self.size_hint = (None, None)
         self.width, self.height = 100, 100
         self.x, self.y = 200, 200
+        self.player_score = 0
 
         self.step = 5
         self.game = None
@@ -30,20 +31,28 @@ class Player(Image):
 
     def update_y_movable(self, y):
         if y > 0:
+            self.fall_offset = 0
             if self.y < Window.size[1] / 2:
-                self.y += y;
+                self.y += y
             else:
+                self.player_score += y
+                self.update_score_label()
                 self.game.move_platforms(0, -y)
         elif not self.check_re_crossing_platform():
+            self.fall_offset -= y
             if self.y > 10:
-                self.y += y;
+                self.y += y
             else:
                 self.game.move_platforms(0, -y)
+
+    def update_score_label(self):
+        self.game.fetch_score(self.player_score / 5)
 
     def check_re_crossing_platform(self):
         return self.game.platforms.check_re_crossing(self.x+15, self.y + (self.height*0.005) + 5,
                                                      self.width-30, self.height*0.005)
 
+    fall_offset = 0
     force = 3
     def update_jumping(self):
         self.update_y_movable(self.force)
@@ -55,6 +64,9 @@ class Player(Image):
             self.force = 8
 
     def update(self, dt):
+        if self.fall_offset > 1000:
+            self.game.lose_game()
+
         self.update_jumping()
         if self.game:
             keys = self.game.keys_pressed

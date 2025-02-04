@@ -22,9 +22,9 @@ class PlatformsCollector:
 
     def create_platforms(self, skin, layout):
         platform_positions = [(200, 50)]
-        for index in range(48):
+        for index in range(48*4):
             x = random.randint(64, 450 - 64)
-            y = random.randint(150, 2400)
+            y = random.randint(150, 2400*2)
             platform_positions.append((x, y))
 
         self.platforms = []
