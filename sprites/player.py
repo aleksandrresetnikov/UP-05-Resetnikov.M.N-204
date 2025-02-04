@@ -44,23 +44,24 @@ class Player(Image):
         return self.game.platforms.check_re_crossing(self.x+15, self.y + (self.height*0.005) + 5,
                                                      self.width-30, self.height*0.005)
 
-    force = -1
+    force = 3
     def update_jumping(self):
-        self.update_y_movable(-self.force)
+        self.update_y_movable(self.force)
 
-        self.force -= 0.5
+        if self.force > -7.5:
+            self.force -= 0.15
 
-        if self.check_re_crossing_platform:
-            self.force = 5
+        if self.force < -1 and self.check_re_crossing_platform():
+            self.force = 8
 
     def update(self, dt):
         self.update_jumping()
         if self.game:
             keys = self.game.keys_pressed
-            if 119 in keys:
+            '''if 119 in keys:
                 self.update_y_movable(self.step)
             if 115 in keys:
-                self.update_y_movable(-self.step)
+                self.update_y_movable(-self.step)'''
             if 100 in keys:
                 self.x += self.step
                 self.source = self.textures["right"]
