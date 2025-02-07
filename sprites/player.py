@@ -1,5 +1,4 @@
 from kivy.uix.image import Image
-from kivy.clock import Clock
 from kivy.core.window import Window
 
 class Player(Image):
@@ -24,8 +23,6 @@ class Player(Image):
 
         self.source = self.textures["left"]
 
-        Clock.schedule_interval(self.update, 1 / 60)
-
     def set_game(self, game):
         self.game = game
 
@@ -37,18 +34,21 @@ class Player(Image):
             else:
                 self.player_score += y
                 self.update_score_label()
-                self.game.move_platforms(0, -y)
+                self.game.move_platforms(0, -y, self.player_score)
         elif not self.check_re_crossing_platform():
             self.fall_offset -= y
             if self.y > 10:
                 self.y += y
             else:
-                self.game.move_platforms(0, -y)
+                self.game.move_platforms(0, -y, self.player_score)
 
     def update_score_label(self):
         self.game.fetch_score(self.player_score / 5)
 
     def check_re_crossing_platform(self):
+        if self.game.platforms is None:
+            return False
+
         return self.game.platforms.check_re_crossing(self.x+15, self.y + (self.height*0.005) + 5,
                                                      self.width-30, self.height*0.005)
 
@@ -64,7 +64,11 @@ class Player(Image):
             self.force = 8
 
     def update(self, dt):
-        if self.fall_offset > 1000:
+        if self.game.manager.current != "game":
+            return
+
+        if self.fall_offset > 1500:
+            self.fall_offset = 0
             self.game.lose_game()
 
         self.update_jumping()

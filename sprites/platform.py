@@ -22,9 +22,9 @@ class PlatformsCollector:
 
     def create_platforms(self, skin, layout):
         platform_positions = [(200, 50)]
-        for index in range(48*4):
+        for index in range(28):
             x = random.randint(64, 450 - 64)
-            y = random.randint(150, 2400*2)
+            y = random.randint(150, 1200)
             platform_positions.append((x, y))
 
         self.platforms = []
@@ -47,14 +47,12 @@ class PlatformsCollector:
 
         return False
 
-    def move_all(self, x, y):
-        remove_stack = []
+    def move_all(self, x, y, score):
         for platform in self.platforms:
             platform.x += x
             platform.y += y
 
             if platform.y < -20:
-                remove_stack.append(platform)
+                platform.x = random.randint(64, 450 - 64)
+                platform.y += random.randint(1000, 1200 + int(score / 7))
 
-        for item in remove_stack:
-            self.platforms.remove(item)
