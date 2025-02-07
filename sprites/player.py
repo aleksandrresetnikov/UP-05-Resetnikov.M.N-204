@@ -1,6 +1,7 @@
 from kivy.uix.image import Image
 from kivy.core.window import Window
 
+
 class Player(Image):
     def __init__(self, skin, **kwargs):
         super().__init__(**kwargs)

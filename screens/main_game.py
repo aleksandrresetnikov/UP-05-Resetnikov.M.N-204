@@ -7,6 +7,7 @@ from kivy.clock import Clock
 from sprites.platform import PlatformsCollector
 from sprites.player import Player
 
+
 class GameScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
