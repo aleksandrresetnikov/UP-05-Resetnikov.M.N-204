@@ -22,7 +22,7 @@ class Game(App):
     def build(self):
         Window.bind(on_key_down=self.on_key_down)
         Window.bind(on_key_up=self.on_key_up)
-        Window.size = (450, 750)
+        Window.size = (450/2, 750/2)
 
         return self.init_components()
 
