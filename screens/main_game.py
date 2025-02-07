@@ -46,6 +46,7 @@ class GameScreen(Screen):
         layout.add_widget(self.background)
 
         self.create_platforms(layout)
+        self.update_bus.append(self.platforms)
 
         self.player_widget = Player(skin=self.skin)
         self.player_widget.set_game(self)

@@ -18,8 +18,9 @@ class GameOverScreen(Screen):
         self.add_widget(layout)
 
     def restart_game(self, instance):
-        self.manager.get_screen("game").reset_game()  # Перезапуск игры
+        self.manager.get_screen("game").reset_game()
         self.manager.current = "game"
 
     def back_to_menu(self, instance):
-        self.manager.current = "menu"
+        self.manager.get_screen("game").reset_game()
+        self.manager.current = "main_menu"

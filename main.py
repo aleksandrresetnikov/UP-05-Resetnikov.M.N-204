@@ -9,7 +9,7 @@ from screens.main_menu import MainMenu
 class GameApp(App):
     def build(self):
         sm = ScreenManager()
-        sm.add_widget(MainMenu(name="menu"))
+        sm.add_widget(MainMenu(name="main_menu"))
         sm.add_widget(GameScreen(name="game"))
         sm.add_widget(GameOverScreen(name="game_over"))
         return sm
