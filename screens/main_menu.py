@@ -11,10 +11,15 @@ class MainMenu(Screen):
 
         label = Label(text="Главное меню", font_size=40)
         play_button = Button(text="Играть", font_size=30, on_press=self.start_game)
+        market_button = Button(text="Скины", font_size=30, on_press=self.open_market)
 
         layout.add_widget(label)
         layout.add_widget(play_button)
+        layout.add_widget(market_button)
         self.add_widget(layout)
 
     def start_game(self, instance):
         self.manager.current = "game"  # Переключение на игру
+
+    def open_market(self, instance):
+        self.manager.current = "market"  # Переключение на игру

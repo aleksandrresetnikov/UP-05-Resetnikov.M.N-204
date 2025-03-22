@@ -4,6 +4,7 @@ from kivy.uix.screenmanager import ScreenManager
 from screens.game_over import GameOverScreen
 from screens.main_game import GameScreen
 from screens.main_menu import MainMenu
+from screens.market_menu import MarketMenu
 
 
 class GameApp(App):
@@ -12,6 +13,7 @@ class GameApp(App):
         sm.add_widget(MainMenu(name="main_menu"))
         sm.add_widget(GameScreen(name="game"))
         sm.add_widget(GameOverScreen(name="game_over"))
+        sm.add_widget(MarketMenu(name="market"))
         return sm
 
 
