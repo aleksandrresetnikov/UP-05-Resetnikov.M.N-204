@@ -39,7 +39,7 @@ class MarketMenu(Screen):
 
         # Лейбл в левой части
         left_label = Label(
-            text="Текст слева",
+            text="Космодудлик",
             size_hint=(0.28, 0.75),
             pos_hint={'x': 0, 'y': 0},
             halign='left',
@@ -50,9 +50,9 @@ class MarketMenu(Screen):
 
         # Лейбл в правой части
         right_label = Label(
-            text="Текст справа",
+            text="1000",
             size_hint=(0.8, 0.75),
-            pos_hint={'right': 1, 'y': 0},
+            pos_hint={'right': 0.95, 'y': 0},
             halign='right',
             valign='middle',
             padding_x=20
@@ -61,10 +61,10 @@ class MarketMenu(Screen):
 
         # Кнопка в виде изображения
         button_image = Button(
-            size_hint=(0.3, 0.45),
-            pos_hint={'right': 1, 'y': 0},
+            size_hint=(0.28, 0.53),
+            pos_hint={'right': 0.98, 'y': 0.05},
             background_normal='assets/buttons/button_buy.png',  # Путь к изображению кнопки
-            background_down='assets/buttons/button_buy.png'  # Путь к изображению нажатой кнопки
+            background_down='assets/buttons/button_buy_press.png'  # Путь к изображению нажатой кнопки
         )
         button_image.bind(on_press=self.buy)  # Привязка метода buy к нажатию кнопки
         panel.add_widget(button_image)
