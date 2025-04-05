@@ -1,6 +1,8 @@
 from kivy.uix.image import Image
 from kivy.core.window import Window
 
+from sprites.platform import BreakablePlatform
+
 
 class Player(Image):
     def __init__(self, skin, **kwargs):
@@ -36,22 +38,25 @@ class Player(Image):
                 self.player_score += y
                 self.update_score_label()
                 self.game.move_platforms(0, -y, self.player_score)
-        elif not self.check_re_crossing_platform():
-            self.fall_offset -= y
-            if self.y > 10:
-                self.y += y
-            else:
-                self.game.move_platforms(0, -y, self.player_score)
+        else:
+            platform = self.check_re_crossing_platform()
+            if platform is None or not platform.has_collision():
+                self.fall_offset -= y
+                if self.y > 10:
+                    self.y += y
+                else:
+                    self.game.move_platforms(0, -y, self.player_score)
 
     def update_score_label(self):
         self.game.fetch_score(self.player_score / 5)
 
     def check_re_crossing_platform(self):
         if self.game.platforms is None:
-            return False
+            return None
 
-        return self.game.platforms.check_re_crossing(self.x+15, self.y + (self.height*0.005) + 5,
+        platform = self.game.platforms.check_re_crossing(self.x+15, self.y + (self.height*0.005) + 5,
                                                      self.width-30, self.height*0.005)
+        return platform
 
     fall_offset = 0
     force = 3
@@ -61,8 +66,16 @@ class Player(Image):
         if self.force > -7.5:
             self.force -= 0.15
 
-        if self.force < -1 and self.check_re_crossing_platform():
+        platform = self.check_re_crossing_platform()
+        if self.force < -1 and (platform is not None and platform.has_collision()):
             self.force = 8
+
+        # Отдельный функционал
+        if self.force < -1 and isinstance(platform, BreakablePlatform):
+            platform.begin_broking(on_break=self.on_break_platform)
+
+    def on_break_platform(self, platform_target):
+        pass
 
     def update(self, dt):
         if self.game.manager.current != "game":

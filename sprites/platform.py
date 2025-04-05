@@ -1,4 +1,5 @@
 import random
+import time
 
 from kivy.uix.image import Image
 
@@ -21,6 +22,9 @@ class Platform(Image):
 
     def update(self, dt):
         pass
+
+    def has_collision(self):
+        return True
 
 
 class MovePlatform(Platform):
@@ -46,6 +50,41 @@ class MovePlatform(Platform):
             self.x -= 1
             if self.x < self.target_negative:
                 self.move_state = True
+
+
+class BreakablePlatform(Platform):
+    def __init__(self, skin, **kwargs):
+        super().__init__(skin, 3, **kwargs)
+        self.skin = skin
+        self.animation_step = 0
+        self.animation_state = False
+
+        self.update_current_source()
+
+    def begin_broking(self, on_break):
+        self.animation_state = True
+        self.on_break = on_break
+        self.animation_timer = time.time()
+
+    def update(self, dt):
+        self.update_animation()
+
+    def update_animation(self):
+        if self.animation_state and self.animation_timer < time.time():
+            self.animation_step += 1
+            self.animation_timer = time.time() + 0.25
+
+        if self.animation_step >= 4:
+            self.on_break(self)
+            self.animation_step = 3
+
+        self.update_current_source()
+
+    def update_current_source(self):
+        self.source = f'assets/platforms/{self.skin}/pl3_{self.animation_step}.png'
+
+    def has_collision(self):
+        return False
 
 
 class PlatformsCollector:
@@ -84,6 +123,13 @@ class PlatformsCollector:
             move_platform.y = y
             self.add_platform(move_platform, layout)
 
+        platform_positions = self.generate_platform_positions(2, (100, 350), (2000, 3500))
+        for (x, y) in platform_positions:
+            move_platform = BreakablePlatform(skin=skin)
+            move_platform.x = x
+            move_platform.y = y
+            self.add_platform(move_platform, layout)
+
     @staticmethod
     def _check_re_crossing(x1, y1, w1, h1, x2, y2, w2, h2):
         return x1 < x2 + w2 and x1 + w1 > x2 and y1 > y2 - h2 and y1 - h1 < y2
@@ -92,9 +138,9 @@ class PlatformsCollector:
         for platform in self.platforms:
             if self._check_re_crossing(platform.x+25, platform.y, platform.width-50,
                                        platform.height, x, y, w, h):
-                return True
+                return platform
 
-        return False
+        return None
 
     def move_all(self, x, y, score):
         for platform in self.platforms:

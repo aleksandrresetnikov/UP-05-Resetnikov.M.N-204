@@ -6,6 +6,9 @@ from screens.main_game import GameScreen
 from screens.main_menu import MainMenu
 from screens.market_menu import MarketMenu
 
+skins_list = ['Default', 'Bunny', 'Doodlestein', 'Jungle',
+              'Snow', 'Soccer', 'Space', 'Underwater']
+
 
 class GameApp(App):
     def build(self):
