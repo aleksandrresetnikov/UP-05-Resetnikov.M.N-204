@@ -20,12 +20,21 @@ class MarketMenu(Screen):
         layout = FloatLayout()
 
         # Фоновое изображение
-        self.background = Image(source='assets/background/default.png', allow_stretch=True, keep_ratio=False)
+        self.background = Image(source='assets/background/Default.png', allow_stretch=True, keep_ratio=False)
         layout.add_widget(self.background)
 
         # Нижняя панель
         self.bottom_panel = self.create_bottom_panel()
         layout.add_widget(self.bottom_panel)
+
+        button_back = Button(
+            size_hint=(0.28, 0.053),
+            pos_hint={'left': 0.98, 'y': 0.08},
+            background_normal='assets/buttons/button_menu.png',  # Путь к изображению кнопки
+            background_down='assets/buttons/button_menu_press.png'  # Путь к изображению нажатой кнопки
+        )
+        button_back.bind(on_press=self.back_to_menu)  # Привязка метода buy к нажатию кнопки
+        layout.add_widget(button_back)
 
         return layout
 
@@ -60,19 +69,18 @@ class MarketMenu(Screen):
         panel.add_widget(right_label)
 
         # Кнопка в виде изображения
-        button_image = Button(
+        button_buy = Button(
             size_hint=(0.28, 0.53),
             pos_hint={'right': 0.98, 'y': 0.05},
             background_normal='assets/buttons/button_buy.png',  # Путь к изображению кнопки
             background_down='assets/buttons/button_buy_press.png'  # Путь к изображению нажатой кнопки
         )
-        button_image.bind(on_press=self.buy)  # Привязка метода buy к нажатию кнопки
-        panel.add_widget(button_image)
+        button_buy.bind(on_press=self.buy)  # Привязка метода buy к нажатию кнопки
+        panel.add_widget(button_buy)
 
         return panel
 
-    def back_to_menu(self):
-        # Переход обратно в главное меню
+    def back_to_menu(self, instance):
         self.manager.current = "main_menu"
 
     def buy(self, instance):

@@ -12,7 +12,7 @@ class GameScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.keys_pressed = set()
-        self.skin = "default"  # Можно изменить
+        self.skin = "Default"  # Можно изменить
 
         self.platforms = None
         self.player_widget = None
@@ -43,7 +43,7 @@ class GameScreen(Screen):
         from kivy.uix.floatlayout import FloatLayout
         layout = FloatLayout()
 
-        self.background = Image(source='assets/background/default.png', allow_stretch=True, keep_ratio=False)
+        self.background = Image(source='assets/background/Default.png', allow_stretch=True, keep_ratio=False)
         layout.add_widget(self.background)
 
         self.create_platforms(layout)
