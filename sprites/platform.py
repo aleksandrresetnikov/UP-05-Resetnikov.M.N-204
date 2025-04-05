@@ -2,7 +2,6 @@ import random
 import time
 
 from kivy.uix.image import Image
-from urllib3.util.util import reraise
 
 
 class Platform(Image):
