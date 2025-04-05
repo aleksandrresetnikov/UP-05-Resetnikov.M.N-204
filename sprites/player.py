@@ -75,7 +75,8 @@ class Player(Image):
             platform.begin_broking(on_break=self.on_break_platform)
 
     def on_break_platform(self, platform_target):
-        pass
+        platform_target.reset_animation()
+        self.game.platforms.fetch_platform(platform_target, self.player_score)
 
     def update(self, dt):
         if self.game.manager.current != "game":

@@ -2,6 +2,7 @@ import random
 import time
 
 from kivy.uix.image import Image
+from urllib3.util.util import reraise
 
 
 class Platform(Image):
@@ -60,11 +61,18 @@ class BreakablePlatform(Platform):
         self.animation_state = False
 
         self.update_current_source()
+        self.animation_timer = time.time()
+        self.on_break = None
 
     def begin_broking(self, on_break):
         self.animation_state = True
         self.on_break = on_break
-        self.animation_timer = time.time()
+
+    def reset_animation(self):
+        self.animation_state = False
+        self.animation_step = 0
+        self.on_break = None
+        self.update_current_source()
 
     def update(self, dt):
         self.update_animation()
@@ -72,16 +80,42 @@ class BreakablePlatform(Platform):
     def update_animation(self):
         if self.animation_state and self.animation_timer < time.time():
             self.animation_step += 1
-            self.animation_timer = time.time() + 0.25
+            self.animation_timer = time.time() + 0.045
 
-        if self.animation_step >= 4:
-            self.on_break(self)
-            self.animation_step = 3
+            if self.animation_step >= 7:
+                if self.on_break is not None:
+                    self.on_break(self)
 
-        self.update_current_source()
+            self.update_offset()
+            self.update_current_source()
+            self.update_source_size()
+
+    def update_source_size(self):
+        match self.animation_step:
+            case 0:
+                self.width, self.height = 64, 16
+            case 1:
+                self.width, self.height = 64, 24
+            case 2:
+                self.width, self.height = 64, 34
+            case 3:
+                self.width, self.height = 64, 35
+
+    def update_offset(self):
+        match self.animation_step:
+            case 0:
+                self.y -= 0
+            case 1:
+                self.y -= 9
+            case 2:
+                self.y -= 21
+            case _:
+                self.y -= 24
 
     def update_current_source(self):
         self.source = f'assets/platforms/{self.skin}/pl3_{self.animation_step}.png'
+        if self.animation_step > 3:
+            self.source = f'assets/platforms/{self.skin}/pl3_{3}.png'
 
     def has_collision(self):
         return False
@@ -123,7 +157,7 @@ class PlatformsCollector:
             move_platform.y = y
             self.add_platform(move_platform, layout)
 
-        platform_positions = self.generate_platform_positions(2, (100, 350), (2000, 3500))
+        platform_positions = self.generate_platform_positions(3, (100, 350), (2000, 3500))
         for (x, y) in platform_positions:
             move_platform = BreakablePlatform(skin=skin)
             move_platform.x = x
@@ -148,9 +182,13 @@ class PlatformsCollector:
             platform.y += y
 
             if platform.y < -20:
-                platform.x = random.randint(64, 450 - 64)
-                rnd_add_x = random.randint(int(platform.get_randomizing_height()*0.5), int(platform.get_randomizing_height()*1.5))
-                platform.y += random.randint(1000, 1200 + int(score / 7) + rnd_add_x)
+                self.fetch_platform(platform, score)
+
+    def fetch_platform(self, platform, score):
+        platform.x = random.randint(64, 450 - 64)
+        rnd_add_x = random.randint(int(platform.get_randomizing_height() * 0.5),
+                                   int(platform.get_randomizing_height() * 1.5))
+        platform.y += random.randint(1000, 1200 + int(score / 7) + rnd_add_x)
 
     def update(self, dt):
         for platform in self.platforms:
