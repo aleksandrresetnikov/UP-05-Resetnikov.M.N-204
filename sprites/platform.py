@@ -2,6 +2,7 @@ import random
 import time
 
 from kivy.uix.image import Image
+from sprites.platform_items import CoinItem, PowerUpItem
 
 
 class Platform(Image):
@@ -9,16 +10,28 @@ class Platform(Image):
         super().__init__(**kwargs)
         self.size_hint = (None, None)
         self.width, self.height = 64, 16
-        self.has_coin = True# random.randint(0, 100) >= 10
-        self.use_coin = False
+        self.has_item = random.randint(0, 100) > 75
+        self.use_item = False
+        self.item_entity = None
 
-        if self.has_coin:
-            self.coin_entity = CoinEntity()
+        self.create_item()
 
         self.step = 5
         self.game = None
         skin = "Default"
         self.source = f'assets/platforms/{skin}/pl{variant}.png'
+
+    def create_item(self):
+        if not self.has_item:
+            return
+
+        rnd = random.randint(0, 100)
+        if rnd < 5:
+            self.item_entity = PowerUpItem()#JetPackItem()
+        elif 5 < rnd < 10:
+            self.item_entity = PowerUpItem()
+        else:
+            self.item_entity = CoinItem()
 
     def set_game(self, game):
         self.game = game
@@ -36,7 +49,7 @@ class Platform(Image):
 class MovePlatform(Platform):
     def __init__(self, skin, **kwargs):
         super().__init__(skin, 2, **kwargs)
-        self.has_coin = False
+        self.has_item = False
         self.move_state = True
         self.target_positive = None
         self.target_negative = None
@@ -62,7 +75,7 @@ class MovePlatform(Platform):
 class BreakablePlatform(Platform):
     def __init__(self, skin, **kwargs):
         super().__init__(skin, 3, **kwargs)
-        self.has_coin = False
+        self.has_item = False
         self.skin = skin
         self.animation_step = 0
         self.animation_state = False
@@ -129,12 +142,6 @@ class BreakablePlatform(Platform):
         return False
 
 
-class CoinEntity(Image):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.source = 'assets/promo/coin.png'
-
-
 class PlatformsCollector:
     def __init__(self, skin, layout):
         self.platforms = None
@@ -144,11 +151,11 @@ class PlatformsCollector:
         self.platforms.append(platform)
         layout.add_widget(platform)
 
-        if platform.has_coin:
-            platform.coin_entity = platform.coin_entity
-            platform.coin_entity.x = platform.x - 195
-            platform.coin_entity.y = platform.y - 355
-            layout.add_widget(platform.coin_entity)
+        if platform.has_item:
+            platform.item_entity = platform.item_entity
+            platform.item_entity.x = platform.x - 195
+            platform.item_entity.y = platform.y - 355
+            layout.add_widget(platform.item_entity)
 
     def generate_platform_positions(self, count=28, x_range=(64, 386), y_range=(150, 1200)):
         platform_positions = []
@@ -201,9 +208,9 @@ class PlatformsCollector:
             platform.x += x
             platform.y += y
 
-            if platform.has_coin:
-                platform.coin_entity.x += x
-                platform.coin_entity.y += y
+            if platform.has_item:
+                platform.item_entity.x += x
+                platform.item_entity.y += y
 
             if platform.y < -20:
                 self.fetch_platform(platform, score)
@@ -214,11 +221,11 @@ class PlatformsCollector:
                                    int(platform.get_randomizing_height() * 1.5))
         platform.y += random.randint(1000, 1200 + int(score / 7) + rnd_add_x)
 
-        platform.use_coin = False
+        platform.use_item = False
 
-        if platform.has_coin:
-            platform.coin_entity.x = platform.x - 195
-            platform.coin_entity.y = platform.y - 355
+        if platform.has_item:
+            platform.item_entity.x = platform.x - 195
+            platform.item_entity.y = platform.y - 355
 
     def update(self, dt):
         for platform in self.platforms:

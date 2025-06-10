@@ -59,6 +59,7 @@ class GameScreen(ScreenBase):
         self.player_widget = Player(skin=self.skin)
         self.player_widget.set_game(self)
         layout.add_widget(self.player_widget)
+        layout.add_widget(self.player_widget.power_up_effect)
         layout.add_widget(self.player_widget.bullet)
         self.update_bus.append(self.player_widget)
 
