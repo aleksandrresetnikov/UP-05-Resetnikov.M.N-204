@@ -1,9 +1,8 @@
 {
     "unlocked_themes": [
-        "Default",
-        "Bunny",
-        "Jungle"
+        "Default"
     ],
-    "coins": 1003,
-    "select_theme": "Default"
+    "coins": 6,
+    "select_theme": "Default",
+    "nickname": "sane5k"
 }

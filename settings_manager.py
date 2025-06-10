@@ -9,7 +9,8 @@ class SettingsManager:
         self.default_settings = {
             "unlocked_themes": ["Default"],
             "coins": 0,
-            "select_theme": "Default"
+            "select_theme": "Default",
+            "nickname": "#none"
         }
         self.settings = self._load_or_create_settings()
 
@@ -91,6 +92,10 @@ class SettingsManager:
 
     def set_nickname(self, nickname):
         self.settings["nickname"] = nickname
+        self._save_settings()
+
+    def has_nickname(self):
+        return self.get_nickname() != "#none"
 
 
     def reset_to_default(self):
