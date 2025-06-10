@@ -158,11 +158,29 @@ class PlatformsCollector:
             layout.add_widget(platform.item_entity)
 
     def generate_platform_positions(self, count=28, x_range=(64, 386), y_range=(150, 1200)):
+        max_jump_height = 200
+        min_horizontal_gap = 100
+
         platform_positions = []
-        for index in range(count):
-            x = random.randint(x_range[0], x_range[1])
-            y = random.randint(y_range[0], y_range[1])
-            platform_positions.append((x, y))
+        current_y = y_range[0]
+        platform_positions.append((random.randint(x_range[0], x_range[1]), current_y))
+
+        for _ in range(count - 1):
+            last_x, last_y = platform_positions[-1]
+
+            vertical_gap = random.randint(50, max_jump_height)
+            new_y = last_y + vertical_gap
+
+            if new_y > y_range[1]:
+                new_y = y_range[0] + random.randint(50, 150)
+
+            max_horizontal_dist = min_horizontal_gap * (1 - vertical_gap / max_jump_height)
+            x_min = max(x_range[0], last_x - max_horizontal_dist)
+            x_max = min(x_range[1], last_x + max_horizontal_dist)
+            
+            new_x = random.randint(int(x_min), int(x_max))
+            
+            platform_positions.append((new_x, new_y))
 
         return platform_positions
 
