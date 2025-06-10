@@ -1,6 +1,7 @@
 from kivy.uix.image import Image
 from kivy.core.window import Window
 
+from sprites.bullet import Bullet
 from sprites.platform import BreakablePlatform
 from settings_manager import settings_instance
 
@@ -12,6 +13,7 @@ class Player(Image):
         self.width, self.height = 100, 100
         self.x, self.y = 200, 200
         self.player_score = 0
+        self.bullet = Bullet(skin)
 
         self.step = 5
         self.game = None
@@ -66,7 +68,7 @@ class Player(Image):
         if self.game.enemies is None:
             return None
 
-        enemy = self.game.platforms.check_re_crossing(self.x + 15, self.y + (self.height * 0.005) + 5,
+        enemy = self.game.enemies.check_re_crossing(self.x + 15, self.y + (self.height * 0.005) + 5,
                                                       self.width - 30, self.height * 0.005)
         return enemy
 
@@ -75,6 +77,11 @@ class Player(Image):
 
         if self.force > -7.5:
             self.force -= 0.15
+
+        enemy = self.check_enemy_re_crossing()
+        if enemy is not None:
+            self.fall_offset = 0
+            self.game.lose_game()
 
         platform = self.check_re_crossing_platform()
         if self.force < -1 and (platform is not None and platform.has_collision()):
@@ -92,7 +99,15 @@ class Player(Image):
         platform_target.reset_animation()
         self.game.platforms.fetch_platform(platform_target, self.player_score)
 
+    def do_shot(self):
+        if self.bullet.movable_state:
+            return
+
+        self.bullet.reset(self.x+45, self.y)
+
     def update(self, dt):
+        self.bullet.update(self.game.enemies, dt)
+
         if self.game.manager.current != "game":
             return
 
@@ -103,6 +118,8 @@ class Player(Image):
         self.update_jumping()
         if self.game:
             keys = self.game.keys_pressed
+            if 32 in keys:
+                self.do_shot();
             if 100 in keys:
                 self.x += self.step
                 self.source = self.textures["right"]
