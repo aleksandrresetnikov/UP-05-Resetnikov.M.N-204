@@ -3,6 +3,7 @@ import time
 from kivy.uix.image import Image
 from kivy.core.window import Window
 
+from api import api_client_instance
 from sprites.bullet import Bullet
 from sprites.platform import BreakablePlatform
 from settings_manager import settings_instance
@@ -86,6 +87,12 @@ class Player(Image):
                                                       self.width - 30, self.height * 0.005)
         return enemy
 
+    def lose_game(self):
+        self.fall_offset = 0
+        self.game.lose_game()
+        player_name = settings_instance.get_nickname()
+        api_client_instance.update_score(player_name, self.player_score)
+
     def update_jumping(self):
         self.update_y_movable(self.force)
 
@@ -94,8 +101,7 @@ class Player(Image):
 
         enemy = self.check_enemy_re_crossing()
         if enemy is not None and not self.has_power_up:
-            self.fall_offset = 0
-            self.game.lose_game()
+            self.lose_game()
 
         platform = self.check_re_crossing_platform()
         if self.force < -1 and (platform is not None and platform.has_collision()):
@@ -145,8 +151,7 @@ class Player(Image):
             return
 
         if self.fall_offset > 1500:
-            self.fall_offset = 0
-            self.game.lose_game()
+            self.lose_game()
 
         self.update_jumping()
         if self.game:
